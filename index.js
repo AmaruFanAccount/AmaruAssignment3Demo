@@ -6,31 +6,35 @@
  * Email: palmaam@oregonstate.edu
  */
 
-var postSection = document.getElementById("posts")
-var addPostButton = document.getElementById("sell-something-button")
-var modalBackdrop = document.getElementById("modal-backdrop")
-var modalBody = document.getElementById("sell-something-modal")
-var modalCloseButton = document.getElementById("modal-close")
-var modalCancelButton = document.getElementById("modal-cancel")
-var modalAcceptButton = document.getElementById("modal-accept")
+function toggleModal() {
+    document.getElementById("modal-backdrop").classList.toggle("hidden")
+    document.getElementById("sell-something-modal").classList.toggle("hidden")
+}
 
-function toggleSellModal() {
-    modalBackdrop.classList.toggle("hidden")
-    modalBody.classList.toggle("hidden")
+function getPostCondition() {
+    if (document.getElementById("post-condition-new").checked) {
+        return "new"
+    }
+    else if (document.getElementById("post-condition-excellent").checked) {
+        return "excellent"
+    }
+    else if (document.getElementById("post-condition-good").checked) {
+        return "good"
+    }
+    else if (document.getElementById("post-condition-fair").checked) {
+        return "fair"
+    }
+    else if (document.getElementById("post-condition-poor").checked) {
+        return "poor"
+    }
 }
 
 function createPost() {
-    var description = document.getElementById("post-text-input").value
-    var url = document.getElementById("post-photo-input").value
-    var price = document.getElementById("post-price-input").value
-    var city = document.getElementById("post-city-input").value
-    //var condition =
-
     var newPost = document.createElement("div")
     newPost.classList.add("post")
-    newPost.dataset.price = price
-    newPost.dataset.city = city
-    //newPost.dataset.condition = condition
+    newPost.dataset.price = document.getElementById("post-price-input").value
+    newPost.dataset.city = document.getElementById("post-city-input").value
+    newPost.dataset.condition = getPostCondition()
 
     var newPostContents = document.createElement("div")
     newPostContents.classList.add("post-contents")
@@ -41,8 +45,8 @@ function createPost() {
     newPostContents.appendChild(newPostImageContainer)
 
     var newPostImage = document.createElement("img")
-    newPostImage.src = url
-    newPostImage.alt = description
+    newPostImage.src = document.getElementById("post-photo-input").value
+    newPostImage.alt = document.getElementById("post-text-input").value
     newPostImageContainer.appendChild(newPostImage)
 
     var newPostInfoContainer = document.createElement("div")
@@ -52,29 +56,72 @@ function createPost() {
     var newPostTitle = document.createElement("a")
     newPostTitle.href = "#"
     newPostTitle.classList.add("post-title")
-    newPostTitle.textContent = description
+    newPostTitle.textContent = document.getElementById("post-text-input").value
     newPostInfoContainer.appendChild(newPostTitle)
 
     var newPostPrice = document.createElement("span")
     newPostPrice.classList.add("post-price")
-    newPostPrice.textContent = "$" + price
+    newPostPrice.textContent = "$" + document.getElementById("post-price-input").value
     newPostInfoContainer.appendChild(newPostPrice)
 
     var newPostCity = document.createElement("span")
     newPostCity.classList.add("post-city")
-    newPostCity.textContent = "(" + city + ")"
+    newPostCity.textContent = "(" + document.getElementById("post-city-input").value + ")"
     newPostInfoContainer.appendChild(newPostCity)
 
-    postSection.appendChild(newPost)
+    document.getElementById("posts").appendChild(newPost)
 }
 
-addPostButton.addEventListener("click", toggleSellModal)
-modalCancelButton.addEventListener("click", toggleSellModal)
-modalCloseButton.addEventListener("click", toggleSellModal)
-modalAcceptButton.addEventListener("click", createPost)
-modalAcceptButton.addEventListener("click", toggleSellModal)
+function clearModal() {
+    document.getElementById("post-text-input").value = ""
+    document.getElementById("post-photo-input").value = ""
+    document.getElementById("post-price-input").value = ""
+    document.getElementById("post-city-input").value = ""
+    document.getElementById("post-condition-new").checked = true
+}
 
-/*to do
-filtering: check for all data things vs filters and then remove the entire post div if no match
-dataset of condition
-clear post menu after closing*/
+function createPostSafe() {
+    if (document.getElementById("post-text-input").value == "" || document.getElementById("post-photo-input").value == "" || document.getElementById("post-price-input").value == "" || document.getElementById("post-city-input").value == "") {
+        alert("Please fill out all post fields!")
+    }
+    else {
+        createPost()
+        toggleModal()
+        clearModal()
+    }
+}
+
+function filter() {
+    var filterText = document.getElementById("filter-text").value
+    var filterMinPrice = document.getElementById("filter-min-price").value
+    var filterMaxPrice = document.getElementById("filter-max-price").value
+    var filterCity = document.getElementById("filter-city").checked
+    var filterConditionNew = document.getElementById("filter-condition-new").checked
+    var filterConditionExcellent = document.getElementById("filter-condition-excellent").checked
+    var filterConditionGood = document.getElementById("filter-condition-good").checked
+    var filterConditionFair = document.getElementById("filter-condition-fair").checked
+    var filterConditionPoor = document.getElementById("filter-condition-poor").checked
+
+    console.log("filter text:", filterText)
+    console.log("filter min price:", filterMinPrice)
+    console.log("filter max price:", filterMaxPrice)
+    console.log("filter city:", filterCity)
+    console.log("filter condition new:", filterConditionNew)
+    console.log("filter condition excellent:", filterConditionExcellent)
+    console.log("filter condition good:", filterConditionGood)
+    console.log("filter condition fair:", filterConditionFair)
+    console.log("filter condition poor:", filterConditionPoor)
+}
+
+
+document.getElementById("sell-something-button").addEventListener("click", toggleModal)
+
+document.getElementById("modal-cancel").addEventListener("click", toggleModal)
+document.getElementById("modal-cancel").addEventListener("click", clearModal)
+
+document.getElementById("modal-close").addEventListener("click", toggleModal)
+document.getElementById("modal-close").addEventListener("click", clearModal)
+
+document.getElementById("modal-accept").addEventListener("click", createPostSafe)
+
+document.getElementById("filter-update-button").addEventListener("click", filter)
