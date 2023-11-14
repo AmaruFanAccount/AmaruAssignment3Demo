@@ -91,28 +91,80 @@ function createPostSafe() {
     }
 }
 
+var removedPosts = [];
+var postsContainer = document.getElementById("posts")
+var posts = postsContainer.children
+
+function addRemovedPosts() {
+    for (var i = 0; i < removedPosts.length; i++) {
+        postsContainer.appendChild(removedPosts[i]);
+    }
+    removedPosts = [];
+}
+
 function filter() {
-    var filterText = document.getElementById("filter-text").value
+    var filterText = document.getElementById("filter-text").value.toLowerCase()
     var filterMinPrice = document.getElementById("filter-min-price").value
     var filterMaxPrice = document.getElementById("filter-max-price").value
-    var filterCity = document.getElementById("filter-city").checked
+    var filterCity = document.getElementById("filter-city").value.toLowerCase()
     var filterConditionNew = document.getElementById("filter-condition-new").checked
     var filterConditionExcellent = document.getElementById("filter-condition-excellent").checked
     var filterConditionGood = document.getElementById("filter-condition-good").checked
     var filterConditionFair = document.getElementById("filter-condition-fair").checked
     var filterConditionPoor = document.getElementById("filter-condition-poor").checked
 
-    console.log("filter text:", filterText)
-    console.log("filter min price:", filterMinPrice)
-    console.log("filter max price:", filterMaxPrice)
-    console.log("filter city:", filterCity)
-    console.log("filter condition new:", filterConditionNew)
-    console.log("filter condition excellent:", filterConditionExcellent)
-    console.log("filter condition good:", filterConditionGood)
-    console.log("filter condition fair:", filterConditionFair)
-    console.log("filter condition poor:", filterConditionPoor)
-}
+    var postsCopy = Array.from(posts);
 
+    for (var i = postsCopy.length - 1; i >= 0; i--) {
+        var currentPost = postsCopy[i];
+
+        //title search
+        if (currentPost.getElementsByClassName("post-title")[0].textContent.toLowerCase().includes(filterText) == false) {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+
+        //price search
+        if (Number(currentPost.dataset.price) < filterMinPrice && filterMinPrice != "") {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+
+        if (Number(currentPost.dataset.price) > filterMaxPrice && filterMaxPrice != "") {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+
+        //city search
+        if (filterCity !== "" && currentPost.dataset.city.toLowerCase() !== filterCity) {
+            removedPosts.push(currentPost);
+            currentPost.remove();
+        }
+
+        //condition search
+        if (filterConditionNew == false && filterConditionExcellent == false && filterConditionGood == false && filterConditionFair == false && filterConditionPoor == false) {}
+        else if(currentPost.dataset.condition == "new" && filterConditionNew == false) {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+        else if(currentPost.dataset.condition == "excellent" && filterConditionExcellent == false) {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+        else if(currentPost.dataset.condition == "good" && filterConditionGood == false) {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+        else if(currentPost.dataset.condition == "fair" && filterConditionFair == false) {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+        else if(currentPost.dataset.condition == "poor" && filterConditionPoor == false) {
+            removedPosts.push(currentPost);
+            currentPost.remove()
+        }
+    }
+}
 
 document.getElementById("sell-something-button").addEventListener("click", toggleModal)
 
@@ -124,4 +176,5 @@ document.getElementById("modal-close").addEventListener("click", clearModal)
 
 document.getElementById("modal-accept").addEventListener("click", createPostSafe)
 
+document.getElementById("filter-update-button").addEventListener("click", addRemovedPosts)
 document.getElementById("filter-update-button").addEventListener("click", filter)
